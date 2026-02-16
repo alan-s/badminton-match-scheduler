@@ -612,7 +612,7 @@ class _SchedulerState extends State<Scheduler> {
                 children: [
                   FilledButton.tonal(
                     onPressed: confirmRandomPlayers,
-                    child: const Text("Add Random Players"),
+                    child: const Text("Add Random"),
                   ),
 
                   // Push the slider down slightly
@@ -623,15 +623,19 @@ class _SchedulerState extends State<Scheduler> {
                     child: SizedBox(
                       width: 100, // keeps slider compact so it doesn't wrap
                       child: SliderTheme(
-                       data: SliderTheme.of(context).copyWith(
-                        showValueIndicator: ShowValueIndicator.alwaysVisible,
-                        overlayShape: const RoundSliderOverlayShape(overlayRadius: 0),
-                        activeTrackColor: Colors.white,
-                        inactiveTrackColor: Colors.white,
-                        thumbColor: const Color(0xFF0F57FF),
-                        overlayColor: const Color(0xFF0F57FF).withValues(alpha: 0.2),
-                        trackHeight: 4,
-                        valueIndicatorColor: const Color(0xFF0F57FF),
+                        data: SliderTheme.of(context).copyWith(
+                          showValueIndicator: ShowValueIndicator.alwaysVisible,
+                          overlayShape: const RoundSliderOverlayShape(
+                            overlayRadius: 0,
+                          ),
+                          activeTrackColor: Colors.white,
+                          inactiveTrackColor: Colors.white,
+                          thumbColor: const Color(0xFF0F57FF),
+                          overlayColor: const Color(
+                            0xFF0F57FF,
+                          ).withValues(alpha: 0.2),
+                          trackHeight: 4,
+                          valueIndicatorColor: const Color(0xFF0F57FF),
                         ),
                         child: Slider(
                           value: randomPlayersToAdd.toDouble(),
