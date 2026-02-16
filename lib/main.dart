@@ -88,7 +88,7 @@ class _SchedulerState extends State<Scheduler> {
   final TextEditingController populateController = TextEditingController();
 
   bool sortByName = false;
-  double randomPlayersToAdd = 2;
+  int randomPlayersToAdd = 2;
 
   @override
   void initState() {
@@ -612,7 +612,7 @@ class _SchedulerState extends State<Scheduler> {
                 children: [
                   FilledButton.tonal(
                     onPressed: confirmRandomPlayers,
-                    child: const Text("Add Random:"),
+                    child: const Text("Add Random Players"),
                   ),
 
                   const SizedBox(width: 12),
@@ -636,10 +636,10 @@ class _SchedulerState extends State<Scheduler> {
                         valueIndicatorColor: const Color(0xFF0F57FF),
                         ),
                         child: Slider(
-                          value: randomPlayersToAdd,
-                          min: 2,
+                          value: randomPlayersToAdd.toDouble(),
+                          min: 1,
                           max: 8,
-                          divisions: 6,
+                          divisions: 7,
                           label: randomPlayersToAdd.toString(),
                           onChanged: (value) {
                             setState(() {
