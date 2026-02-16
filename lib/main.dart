@@ -581,7 +581,7 @@ class _SchedulerState extends State<Scheduler> {
                 ),
               ),
             ),
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
             onChanged: (_) => setState(() {}),
           ),
 
