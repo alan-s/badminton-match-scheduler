@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:math';
 import 'package:web/web.dart' as web;
 import 'package:flutter/material.dart';
-// import 'package:flutter/rendering.dart';
+//import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  //   debugPaintSizeEnabled = true;
-  //   debugPaintSizeEnabled = true;
+  //debugPaintSizeEnabled = true;
+  //debugPaintPointersEnabled = true;
+  
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
@@ -1111,7 +1112,7 @@ class CourtCard extends StatelessWidget {
     return Column(
       children: [
         _buildSlot(a, avatarSize),
-        SizedBox(height: isMobile ? 90 * 0.7 : 90),
+        SizedBox(height: isMobile ? 70 : 90),
         _buildSlot(b, avatarSize),
       ],
     );
