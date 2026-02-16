@@ -88,12 +88,12 @@ class _SchedulerState extends State<Scheduler> {
   final TextEditingController populateController = TextEditingController();
 
   bool sortByName = false;
-  double randomPlayersToAdd = 4;
+  double randomPlayersToAdd = 2;
 
   @override
   void initState() {
     super.initState();
-    
+
     Timer.periodic(const Duration(seconds: 5), (_) {
       if (mounted) {
         setState(() {});
@@ -607,42 +607,50 @@ class _SchedulerState extends State<Scheduler> {
                     : populatePlayers,
                 child: const Text("Add From List"),
               ),
-              FilledButton.tonal(
-                onPressed: confirmRandomPlayers,
-                child: const Text("Add Random:"),
-              ),
-              SizedBox(
-                width: 100,
-                child: Column(
-                  children: [
-                    SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FilledButton.tonal(
+                    onPressed: confirmRandomPlayers,
+                    child: const Text("Add Random:"),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  // Push the slider down slightly
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 6,
+                    ), // adjust this value as needed
+                    child: SizedBox(
+                      width: 100, // keeps slider compact so it doesn't wrap
+                      child: SliderTheme(
+                       data: SliderTheme.of(context).copyWith(
                         showValueIndicator: ShowValueIndicator.alwaysVisible,
                         overlayShape: const RoundSliderOverlayShape(overlayRadius: 0),
                         activeTrackColor: Colors.white,
                         inactiveTrackColor: Colors.white,
                         thumbColor: const Color(0xFF0F57FF),
-                        overlayColor: const Color(
-                          0xFF0F57FF,
-                        ).withValues(alpha: 0.2),
+                        overlayColor: const Color(0xFF0F57FF).withValues(alpha: 0.2),
                         trackHeight: 4,
                         valueIndicatorColor: const Color(0xFF0F57FF),
-                      ),
-                      child: Slider(
-                        value: randomPlayersToAdd,
-                        min: 2,
-                        max: 8,
-                        divisions: 6,
-                        label: randomPlayersToAdd.toInt().toString(),
-                        onChanged: (value) {
-                          setState(() {
-                            randomPlayersToAdd = value;
-                          });
-                        },
+                        ),
+                        child: Slider(
+                          value: randomPlayersToAdd,
+                          min: 2,
+                          max: 8,
+                          divisions: 6,
+                          label: randomPlayersToAdd.toString(),
+                          onChanged: (value) {
+                            setState(() {
+                              randomPlayersToAdd = value.round();
+                            });
+                          },
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               const SizedBox(width: double.infinity),
