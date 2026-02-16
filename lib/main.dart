@@ -1048,7 +1048,6 @@ class CourtCard extends StatelessWidget {
     this.onPlayerTap,
   });
 
-  @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isMobile = screenWidth < 600;
@@ -1059,72 +1058,56 @@ class CourtCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: Stack(
-          children: [
-            // ------------------------------------------------------------
-            // 1. Background card (bottom layer)
-            // ------------------------------------------------------------
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-              margin: const EdgeInsets.all(6),
-              padding: const EdgeInsets.all(10), // ← RESTORED padding
-              decoration: BoxDecoration(
-                color: const Color(0xFF1773B4),
-                borderRadius: BorderRadius.zero,
-                border: Border.all(
-                  width: isSelected ? 2 : 1,
-                  color: isSelected ? const Color(0xFF1E39D4) : Colors.white,
+      child: CustomPaint(
+        foregroundPainter: _CourtLinesPainter(),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          width: width,
+          height: height,
+          margin: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1773B4),
+            //borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.zero,
+            border: Border.all(
+              width: isSelected ? 2 : 1,
+              //color: isSelected ? const Color(0xFF4B5563) : Colors.black26,
+              //color: isSelected ? const Color(0xFF0d2AD1) : Colors.black26,
+              color: isSelected ? const Color(0xFF1E39D4) : Colors.white,
+            ),
+            boxShadow: [
+              if (isSelected)
+                BoxShadow(
+                  color: const Color(0xFF0d2AD1).withValues(alpha: 0.6),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
-                boxShadow: [
-                  if (isSelected)
-                    BoxShadow(
-                      color: const Color(0xFF0d2AD1).withValues(alpha: 0.6),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
-                    ),
-                ],
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              SizedBox(height: isMobile ? 14 * 0.7 : 14),
+              SizedBox(
+                height: isMobile ? 190 * 0.7 : 190,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildColumn(0, 2, avatarSize, isMobile),
+                    _buildColumn(1, 3, avatarSize, isMobile),
+                  ],
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  SizedBox(height: isMobile ? 10 * 0.5 : 10),
-                  SizedBox(
-                    height: isMobile ? 100 : 180,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildColumn(0, 2, avatarSize, isMobile),
-                        _buildColumn(1, 3, avatarSize, isMobile),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ------------------------------------------------------------
-            // 2. Court lines painter (middle layer)
-            // ------------------------------------------------------------
-            IgnorePointer(
-              child: CustomPaint(
-                painter: _CourtLinesPainter(),
-                child: const SizedBox.expand(),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ------------------------------------------------------------
-  // Player column builder
-  // ------------------------------------------------------------
-  Widget _buildColumn(int a, int b, double avatarSize, bool isMobile) {
+  Widget _buildColumn(int a, int b, double avatarSize, isMobile) {
     return Column(
       children: [
         _buildSlot(a, avatarSize),
@@ -1134,15 +1117,11 @@ class CourtCard extends StatelessWidget {
     );
   }
 
-  // ------------------------------------------------------------
-  // Player slot builder
-  // ------------------------------------------------------------
   Widget _buildSlot(int index, double avatarSize) {
     final hasPlayer = players.length > index;
     final player = hasPlayer ? players[index] : null;
 
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
       onTap: hasPlayer && onPlayerTap != null
           ? () => onPlayerTap!(player!)
           : null,
