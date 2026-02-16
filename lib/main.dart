@@ -615,8 +615,6 @@ class _SchedulerState extends State<Scheduler> {
                     child: const Text("Add Random Players"),
                   ),
 
-                  const SizedBox(width: 12),
-
                   // Push the slider down slightly
                   Padding(
                     padding: const EdgeInsets.only(
