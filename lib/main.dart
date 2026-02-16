@@ -612,7 +612,7 @@ class _SchedulerState extends State<Scheduler> {
                 child: const Text("Add Random Players"),
               ),
               SizedBox(
-                width: 140,
+                width: 100,
                 child: Column(
                   children: [
                     SliderTheme(
