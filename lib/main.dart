@@ -609,7 +609,7 @@ class _SchedulerState extends State<Scheduler> {
               ),
               FilledButton.tonal(
                 onPressed: confirmRandomPlayers,
-                child: const Text("Add Random Players"),
+                child: const Text("Add Random:"),
               ),
               SizedBox(
                 width: 100,
@@ -618,6 +618,7 @@ class _SchedulerState extends State<Scheduler> {
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         showValueIndicator: ShowValueIndicator.alwaysVisible,
+                        overlayShape: const RoundSliderOverlayShape(overlayRadius: 0),
                         activeTrackColor: Colors.white,
                         inactiveTrackColor: Colors.white,
                         thumbColor: const Color(0xFF0F57FF),
