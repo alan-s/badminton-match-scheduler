@@ -1,0 +1,3 @@
+Badminton Match Scheduler
+
+flutter build web --release --base-href "/badminton/"
