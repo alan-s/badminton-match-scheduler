@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:math';
 import 'package:web/web.dart' as web;
 import 'package:flutter/material.dart';
-// import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
+// import 'package:flutter/rendering.dart';
 
 void main() {
-  //   debugPaintSizeEnabled = true;
-  //   debugPaintSizeEnabled = true;
+//   debugPaintSizeEnabled = true;
+//   debugPaintPointersEnabled = true;
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
@@ -41,9 +41,9 @@ void main() {
           },
         ),
         dividerTheme: const DividerThemeData(
-          color: Colors.white, // your global divider colour
-          thickness: 2, // optional: default thickness
-          space: 20, // optional: default vertical spacing
+          color: Colors.white,
+          thickness: 2,
+          space: 20,
         ),
       ),
       home: const Scheduler(),
@@ -73,7 +73,11 @@ class _SchedulerState extends State<Scheduler> {
 
   final List<Player> allPlayers = [];
   final List<Player> waitingPlayers = [];
-  final Map<int, List<Player>> courts = {1: [], 2: []};
+
+  final Map<int, List<Player?>> courts = {
+    1: List.filled(4, null),
+    2: List.filled(4, null),
+  };
 
   int? selectedCourt;
   Player? selectedWaitingPlayer;
@@ -163,7 +167,7 @@ class _SchedulerState extends State<Scheduler> {
 
     int? emptyCourt;
     courts.forEach((courtNumber, players) {
-      if (emptyCourt == null && players.isEmpty) {
+      if (emptyCourt == null && players.every((p) => p == null)) {
         emptyCourt = courtNumber;
       }
     });
@@ -181,9 +185,12 @@ class _SchedulerState extends State<Scheduler> {
 
       for (var p in nextFour) {
         waitingPlayers.remove(p);
-      }
 
-      courtPlayers.addAll(nextFour);
+        final index = courtPlayers.indexOf(null);
+        if (index != -1) {
+          courtPlayers[index] = p;
+        }
+      }
 
       selectedCourt = emptyCourt;
     });
@@ -219,7 +226,7 @@ class _SchedulerState extends State<Scheduler> {
     setState(() {
       waitingPlayers.clear();
       allPlayers.clear();
-      courts.forEach((k, v) => v.clear());
+      courts.forEach((k, v) => courts[k] = List.filled(4, null));
       usedIds.clear();
       selectedCourt = null;
       selectedWaitingPlayer = null;
@@ -336,7 +343,10 @@ class _SchedulerState extends State<Scheduler> {
   }
 
   List<Player> getAllPlayersForStats() {
-    final allPlayers = [...waitingPlayers, ...courts.values.expand((e) => e)];
+    final allPlayers = [
+      ...waitingPlayers,
+      ...courts.values.expand((e) => e).where((p) => p != null).cast<Player>(),
+    ];
     allPlayers.sort(comparePlayersForStats);
     return allPlayers;
   }
@@ -356,7 +366,7 @@ class _SchedulerState extends State<Scheduler> {
 
     setState(() {
       final newCourtNumber = courts.length + 1;
-      courts[newCourtNumber] = [];
+      courts[newCourtNumber] = List.filled(4, null);
     });
   }
 
@@ -393,11 +403,13 @@ class _SchedulerState extends State<Scheduler> {
     if (confirm != true) return;
 
     setState(() {
-      waitingPlayers.addAll(courts[courtNumber]!);
+      for (var p in courts[courtNumber]!) {
+        if (p != null) waitingPlayers.add(p);
+      }
 
       courts.remove(courtNumber);
 
-      final newCourts = <int, List<Player>>{};
+      final newCourts = <int, List<Player?>>{};
       int index = 1;
       for (var entry in courts.entries) {
         newCourts[index] = entry.value;
@@ -414,12 +426,14 @@ class _SchedulerState extends State<Scheduler> {
   void completeMatch(int courtNumber) {
     setState(() {
       for (var p in courts[courtNumber]!) {
-        p.matchesPlayed++;
-        p.lastPlayed = DateTime.now();
+        if (p != null) {
+          p.matchesPlayed++;
+          p.lastPlayed = DateTime.now();
+          waitingPlayers.add(p);
+        }
       }
 
-      waitingPlayers.addAll(courts[courtNumber]!);
-      courts[courtNumber]!.clear();
+      courts[courtNumber] = List.filled(4, null);
 
       selectedCourt = null;
     });
@@ -529,7 +543,6 @@ class _SchedulerState extends State<Scheduler> {
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 700;
 
-          // SAME LAYOUT FOR BOTH MOBILE AND DESKTOP
           return SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Column(
@@ -538,7 +551,6 @@ class _SchedulerState extends State<Scheduler> {
 
                 const SizedBox(height: 20),
 
-                // Stats panel always at the bottom
                 Card(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   child: StatsPanel(
@@ -568,11 +580,8 @@ class _SchedulerState extends State<Scheduler> {
             decoration: InputDecoration(
               hintText: "Paste CSV List - e.g. NB:Natalie,BK:Bob,...",
               hintStyle: const TextStyle(color: Colors.white70, fontSize: 14),
-
-              // 🔥 Custom borders
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.white54, width: 1),
-                //borderRadius: BorderRadius.circular(8),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
@@ -634,7 +643,6 @@ class _SchedulerState extends State<Scheduler> {
         children: [
           const SizedBox(height: 10),
 
-          // Courts
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -647,12 +655,10 @@ class _SchedulerState extends State<Scheduler> {
                           "Court $courtNumber",
                           style: const TextStyle(
                             fontSize: 12,
-                            //fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
 
-                        //const SizedBox(height: 4), // small gap above the card
                         CourtCard(
                           courtNumber: courtNumber,
                           players: courts[courtNumber]!,
@@ -665,13 +671,22 @@ class _SchedulerState extends State<Scheduler> {
                               selectedWaitingPlayer = null;
                             });
                           },
-                          onComplete: courts[courtNumber]!.length == 4
+                          onComplete:
+                              courts[courtNumber]!
+                                      .where((p) => p != null)
+                                      .length ==
+                                  4
                               ? () => completeMatch(courtNumber)
                               : null,
                           onPlayerTap: (player) {
                             setState(() {
-                              courts[courtNumber]!.remove(player);
-                              waitingPlayers.add(player);
+                              final list = courts[courtNumber]!;
+                              final index = list.indexOf(player);
+                              if (index != -1) {
+                                list[index] = null;
+                                waitingPlayers.add(player);
+                                selectedCourt = courtNumber;
+                              }
                             });
                           },
                         ),
@@ -682,12 +697,13 @@ class _SchedulerState extends State<Scheduler> {
                               horizontal: 8,
                               vertical: 6,
                             ),
-                            minimumSize: const Size(
-                              0,
-                              32,
-                            ), // prevents Flutter from forcing a wide button
+                            minimumSize: const Size(0, 32),
                           ),
-                          onPressed: courts[courtNumber]!.length == 4
+                          onPressed:
+                              courts[courtNumber]!
+                                      .where((p) => p != null)
+                                      .length ==
+                                  4
                               ? () => completeMatch(courtNumber)
                               : null,
                           child: const Text("Completed"),
@@ -715,7 +731,6 @@ class _SchedulerState extends State<Scheduler> {
 
           const SizedBox(height: 10),
 
-          // Waiting players
           Wrap(
             spacing: 12,
             runSpacing: 12,
@@ -729,11 +744,14 @@ class _SchedulerState extends State<Scheduler> {
                       setState(() {
                         if (selectedCourt != null) {
                           final courtPlayers = courts[selectedCourt]!;
-                          if (courtPlayers.length < 4) {
-                            courtPlayers.add(player);
+                          final index = courtPlayers.indexOf(null);
+
+                          if (index != -1) {
+                            courtPlayers[index] = player;
                             waitingPlayers.remove(player);
 
-                            if (courtPlayers.length == 4) {
+                            if (courtPlayers.where((p) => p != null).length ==
+                                4) {
                               selectedCourt = null;
                             }
                           }
@@ -752,8 +770,8 @@ class _SchedulerState extends State<Scheduler> {
 
           Wrap(
             alignment: WrapAlignment.center,
-            spacing: 12, // horizontal space between buttons
-            runSpacing: 12, // vertical space between lines
+            spacing: 12,
+            runSpacing: 12,
             children: [
               FilledButton.tonal(
                 onPressed: assignNextFour,
@@ -858,10 +876,7 @@ class PlayerAvatarCircle extends StatelessWidget {
               backgroundColor: player!.color,
               child: Text(
                 player!.id,
-                style: const TextStyle(
-                  //fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
     );
@@ -900,11 +915,7 @@ class PlayerAvatarRect extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            //fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
         ),
       ),
     );
@@ -934,6 +945,7 @@ class SelectablePlayerCircle extends StatelessWidget {
         : isLastAdded
         ? Colors.green
         : Colors.white;
+
     double borderWidth = isSelected
         ? 2
         : isLastAdded
@@ -1019,10 +1031,7 @@ class _CourtLinesPainter extends CustomPainter {
     // Center vertical partial lines
     final double midX = left + w * 0.5;
 
-    // From bottom 5.5% line up to bottom 35% line
     canvas.drawLine(Offset(midX, h2), Offset(midX, h35Bottom), paint);
-
-    // From top 5.5% line down to top 35% line
     canvas.drawLine(Offset(midX, h1), Offset(midX, h35Top), paint);
   }
 
@@ -1032,7 +1041,7 @@ class _CourtLinesPainter extends CustomPainter {
 
 class CourtCard extends StatelessWidget {
   final int courtNumber;
-  final List<Player> players;
+  final List<Player?> players;
   final bool isSelected;
   final VoidCallback? onTap;
   final VoidCallback? onComplete;
@@ -1048,6 +1057,7 @@ class CourtCard extends StatelessWidget {
     this.onPlayerTap,
   });
 
+  @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isMobile = screenWidth < 600;
@@ -1069,12 +1079,9 @@ class CourtCard extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: const Color(0xFF1773B4),
-            //borderRadius: BorderRadius.circular(8),
             borderRadius: BorderRadius.zero,
             border: Border.all(
               width: isSelected ? 2 : 1,
-              //color: isSelected ? const Color(0xFF4B5563) : Colors.black26,
-              //color: isSelected ? const Color(0xFF0d2AD1) : Colors.black26,
               color: isSelected ? const Color(0xFF1E39D4) : Colors.white,
             ),
             boxShadow: [
@@ -1107,7 +1114,7 @@ class CourtCard extends StatelessWidget {
     );
   }
 
-  Widget _buildColumn(int a, int b, double avatarSize, isMobile) {
+  Widget _buildColumn(int a, int b, double avatarSize, bool isMobile) {
     return Column(
       children: [
         _buildSlot(a, avatarSize),
@@ -1118,12 +1125,11 @@ class CourtCard extends StatelessWidget {
   }
 
   Widget _buildSlot(int index, double avatarSize) {
-    final hasPlayer = players.length > index;
-    final player = hasPlayer ? players[index] : null;
+    final player = players[index];
 
     return GestureDetector(
-      onTap: hasPlayer && onPlayerTap != null
-          ? () => onPlayerTap!(player!)
+      onTap: player != null && onPlayerTap != null
+          ? () => onPlayerTap!(player)
           : null,
       child: PlayerAvatarCircle(player: player, size: avatarSize),
     );
@@ -1148,17 +1154,11 @@ class StatsPanel extends StatelessWidget {
     final bool isMobile = width < 700;
     final double fontSize = isMobile ? 12 : 14;
 
-    final headerStyle = TextStyle(
-      //fontWeight: FontWeight.bold,
-      color: Colors.white, // ← your chosen color
-    );
+    final headerStyle = TextStyle(color: Colors.white);
 
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF37BCFF),
-        //borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: const Color(0xFF37BCFF)),
       child: Column(
         children: [
           Container(
