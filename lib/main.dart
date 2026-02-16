@@ -6,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter/rendering.dart';
 
 void main() {
-//   debugPaintSizeEnabled = true;
-//   debugPaintPointersEnabled = true;
+  //   debugPaintSizeEnabled = true;
+  //   debugPaintPointersEnabled = true;
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
@@ -88,11 +88,12 @@ class _SchedulerState extends State<Scheduler> {
   final TextEditingController populateController = TextEditingController();
 
   bool sortByName = false;
+  double randomPlayersToAdd = 4;
 
   @override
   void initState() {
     super.initState();
-
+    
     Timer.periodic(const Duration(seconds: 5), (_) {
       if (mounted) {
         setState(() {});
@@ -105,8 +106,7 @@ class _SchedulerState extends State<Scheduler> {
 
   void defaultPopulate() {
     setState(() {
-      final totalCourts = courts.length;
-      final playersNeeded = totalCourts * 4;
+      final playersNeeded = randomPlayersToAdd.toInt();
 
       for (int i = 0; i < playersNeeded; i++) {
         final p = generateRandomPlayer();
@@ -610,6 +610,38 @@ class _SchedulerState extends State<Scheduler> {
               FilledButton.tonal(
                 onPressed: confirmRandomPlayers,
                 child: const Text("Add Random Players"),
+              ),
+              SizedBox(
+                width: 140,
+                child: Column(
+                  children: [
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        showValueIndicator: ShowValueIndicator.alwaysVisible,
+                        activeTrackColor: Colors.white,
+                        inactiveTrackColor: Colors.white,
+                        thumbColor: const Color(0xFF0F57FF),
+                        overlayColor: const Color(
+                          0xFF0F57FF,
+                        ).withValues(alpha: 0.2),
+                        trackHeight: 4,
+                        valueIndicatorColor: const Color(0xFF0F57FF),
+                      ),
+                      child: Slider(
+                        value: randomPlayersToAdd,
+                        min: 2,
+                        max: 8,
+                        divisions: 6,
+                        label: randomPlayersToAdd.toInt().toString(),
+                        onChanged: (value) {
+                          setState(() {
+                            randomPlayersToAdd = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(width: double.infinity),
