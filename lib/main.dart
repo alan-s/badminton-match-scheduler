@@ -138,8 +138,9 @@ class _SchedulerState extends State<Scheduler> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Add Random Players"),
-        content: const Text(
-          "This will add a new batch of random players to the current session.\n\nContinue?",
+        content: Text(
+          "This will add $randomPlayersToAdd random player"
+          "${randomPlayersToAdd == 1 ? '' : 's'} to the current session.\n\nContinue?",
         ),
         actions: [
           TextButton(
@@ -456,18 +457,22 @@ class _SchedulerState extends State<Scheduler> {
         return "Player list is invalid. Check format and try again!";
       }
 
-      final id = parts[0].trim();
+      final rawId = parts[0].trim();
+      final id = rawId.toUpperCase(); // normalize casing
       final name = parts[1].trim();
 
       if (id.isEmpty || id.length > 2 || name.isEmpty || name.length > 12) {
         return "Player list is invalid. Check format and try again!";
       }
 
+      // Check duplicates ignoring case
       if (ids.contains(id) || usedIds.contains(id)) {
-        return "Player ID '$id' already exists. Fix and try again.";
+        return "Player ID '$rawId' already exists (case-insensitive). Fix and try again.";
       }
+
       ids.add(id);
     }
+
     return null;
   }
 
@@ -577,6 +582,7 @@ class _SchedulerState extends State<Scheduler> {
             controller: populateController,
             minLines: 1,
             maxLines: null,
+            cursorColor: Color(0xFF0F57FF),
             decoration: InputDecoration(
               hintText: "Paste CSV List - e.g. NB:Natalie,BK:Bob,...",
               hintStyle: const TextStyle(color: Colors.white70, fontSize: 14),
