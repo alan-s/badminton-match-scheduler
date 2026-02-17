@@ -45,6 +45,11 @@ void main() {
           thickness: 2,
           space: 20,
         ),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color(0xFF0F57FF), 
+          //selectionColor: Color(0xFF0F57FF), 
+          selectionHandleColor: Color(0xFF0F57FF),
+        ),
       ),
       home: const Scheduler(),
     ),
