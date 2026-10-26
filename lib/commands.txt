@@ -1,6 +1,6 @@
 Badminton Match Scheduler
 
-To build locally:
+To build locally (ensure full write access and AV apps such as Comodo white list your local Flutter SDK path):
 flutter build web --release --base-href "/badminton-match-scheduler/"
 
 To run locally:
