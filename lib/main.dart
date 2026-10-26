@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:web/web.dart' as web;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 // import 'package:flutter/rendering.dart';
 
 void main() {
@@ -548,6 +550,13 @@ class _SchedulerState extends State<Scheduler> {
             fontStyle: FontStyle.italic,
           ),
         ),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(28),
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: GithubLink(),
+          ),
+        ),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -882,29 +891,6 @@ class _SchedulerState extends State<Scheduler> {
           ),
 
           Divider(),
-
-          // Added GitHub repository row at the bottom of the content column
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.network(
-                  'githubassets.com',
-                  width: 16,
-                  height: 16,
-                  color: Colors.white,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.code, size: 16, color: Colors.white),
-                ),
-                const SizedBox(width: 6),
-                const Text(
-                  "https://github.com/alan-s/badminton-match-scheduler",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -1329,6 +1315,43 @@ class StatsPanel extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+const _githubSvg = '''
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/>
+</svg>
+''';
+
+class GithubLink extends StatelessWidget {
+  const GithubLink({super.key});
+
+  static final _repoUrl = Uri.parse('https://github.com/alan-s/badminton-match-scheduler');
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurface;
+
+    return Center(
+      child: InkWell(
+        onTap: () => launchUrl(_repoUrl, mode: LaunchMode.externalApplication),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.string(
+              _githubSvg,
+              width: 16,
+              height: 16,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+              semanticsLabel: '',
+            ),
+            const SizedBox(width: 8),
+            const Text('github.com/alan-s/wild-reg'),
+          ],
+        ),
       ),
     );
   }
