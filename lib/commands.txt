@@ -1,5 +1,10 @@
 Badminton Match Scheduler
 
+To build locally:
 flutter build web --release --base-href "/badminton-match-scheduler/"
 
+To run locally:
 flutter run -d Chrome
+
+To deploy:
+Copy '.\build\web' to '.\docs' given we host on GitHub Pages 
