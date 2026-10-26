@@ -1329,14 +1329,14 @@ const _githubSvg = '''
 class GithubLink extends StatelessWidget {
   const GithubLink({super.key});
 
-  static final _repoUrl = Uri.parse('https://github.com/alan-s/badminton-match-scheduler');
+  static final _repoUrl = Uri.parse('https://github.com/alan-s/wild-reg');
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.onSurface;
 
     return Center(
-      child: InkWell(
+      child: GestureDetector(
         onTap: () => launchUrl(_repoUrl, mode: LaunchMode.externalApplication),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1349,7 +1349,7 @@ class GithubLink extends StatelessWidget {
               semanticsLabel: '',
             ),
             const SizedBox(width: 8),
-            const Text('github.com/alan-s/wild-reg'),
+            const Text('github.com/alan-s/badminton-match-scheduler/'),
           ],
         ),
       ),
