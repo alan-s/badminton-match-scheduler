@@ -46,8 +46,8 @@ void main() {
           space: 20,
         ),
         textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: Color(0xFF0F57FF), 
-          selectionColor: Color(0xFF0F57FF), 
+          cursorColor: Color(0xFF0F57FF),
+          selectionColor: Color(0xFF0F57FF),
           selectionHandleColor: Color(0xFF0F57FF),
         ),
       ),
@@ -882,6 +882,29 @@ class _SchedulerState extends State<Scheduler> {
           ),
 
           Divider(),
+
+          // Added GitHub repository row at the bottom of the content column
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network(
+                  'githubassets.com',
+                  width: 16,
+                  height: 16,
+                  color: Colors.white,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.code, size: 16, color: Colors.white),
+                ),
+                const SizedBox(width: 6),
+                const Text(
+                  "https://github.com/alan-s/badminton-match-scheduler",
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
