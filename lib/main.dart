@@ -1329,7 +1329,7 @@ const _githubSvg = '''
 class GithubLink extends StatelessWidget {
   const GithubLink({super.key});
 
-  static final _repoUrl = Uri.parse('https://github.com/alan-s/wild-reg');
+  static final _repoUrl = Uri.parse('https://github.com/alan-s/badminton-match-scheduler');
 
   @override
   Widget build(BuildContext context) {
@@ -1349,7 +1349,7 @@ class GithubLink extends StatelessWidget {
               semanticsLabel: '',
             ),
             const SizedBox(width: 8),
-            const Text('github.com/alan-s/badminton-match-scheduler/'),
+            const Text('github.com/alan-s/'),
           ],
         ),
       ),
